@@ -6,9 +6,10 @@ together.
 from __future__ import print_function
 from flask import Flask, render_template
 from tornado.wsgi import WSGIContainer
-from tornado.web import Application, FallbackHandler
+from tornado.web import Application, FallbackHandler, StaticFileHandler
 from tornado.websocket import WebSocketHandler
 from tornado.ioloop import IOLoop
+import sys
 
 class WebSocket(WebSocketHandler):
     def open(self):
@@ -27,11 +28,24 @@ app = Flask('flasknado')
 def index():
     return render_template('index.html')
 
+def startTornado():
+    server.listen(8080)
+    IOLoop.instance().start()
+
+def stopTornado():
+    print("\nKeyboardInterrupt; Tornado is shutting down now.")
+    IOLoop.instance().stop()
+    sys.exit(0)
+
 if __name__ == "__main__":
     container = WSGIContainer(app)
     server = Application([
+        (r'/(favicon.ico)', StaticFileHandler, {'path': 'static'}),
         (r'/websocket/', WebSocket),
         (r'.*', FallbackHandler, dict(fallback=container))
     ])
-    server.listen(8080)
-    IOLoop.instance().start()
+
+    try:
+        startTornado()
+    except (KeyboardInterrupt, SystemExit):
+        stopTornado()
