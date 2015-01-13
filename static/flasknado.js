@@ -5,12 +5,12 @@ $(document).ready(function() {
     socket = new WebSocket("ws://" + document.domain + ":8080/websocket/");
 
     socket.onopen = function() {
-	socket.send("Joined");
+        socket.send("Joined");
     }
 
     socket.onmessage = function(message) {
-	var txt = message.data;
-	$(".container").append("<p>" + txt + "</p>");
+        var txt = message.data;
+        $(".container").append("<p>" + txt + "</p>");
     }
 });
 
